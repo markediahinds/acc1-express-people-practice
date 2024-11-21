@@ -32,3 +32,6 @@ const people = [
         isActive: true
     }
 ];
+
+
+module.exports = people

@@ -3,12 +3,6 @@ const people = express.Router()
 const peopleArr = require('../data/people')
 
 
-people.post('/', (req, res) => {
-    // req.body provides us with the person object automatically
-    peopleArr.push(req.body)
-    res.status(201).json(peopleArr[peopleArr.length-1]) // access the last person in the peoplesArr
-})
-
 
 people.get('/', (req, res) => {
     try {
@@ -27,21 +21,29 @@ people.get('/:id', (req, res) => {
         const person = peopleArr.find(person => person.id === Number(id)) // if the id pulled from the params matches an id in the arr.. 
         if (person) {   
             res.status(200).json(person) // ..render it
+        } else {
+            throw 'Person Not Found'
         }
     } catch (error) {
         console.log('Error', error)
-        res.status(404).json({ error: 'Person Not Found' })
+        res.status(404).json({ error: error })
     }
 })
 
+people.post('/', (req, res) => {
+    // req.body provides us with the person object automatically
+    peopleArr.push(req.body)
+    res.status(201).json(peopleArr[peopleArr.length-1]) // access the last person in the peoplesArr
+})
 
 people.put('/:id', (req, res) => {
     const { id } = req.params
     try {
-        const personIdx = animesArr.findIndex(person => person.id === Number(id)); // findIndex will return the index or -1
-            if (index !== -1) {
-                peopleArr.splice(personIdx, 1) // or use filter (unsure how to apply that)   
-                res.status(200).json(peopleArr) // what status is best? Status for receiving response or stat for successfully deleting element?
+        const person = req.body
+        const personIdx = peopleArr.findIndex(person => person.id === Number(id)); // findIndex will return the index or -1
+            if (personIdx !== -1) {
+                peopleArr.splice(personIdx, 1, person)   
+                res.status(200).json(person)
         }
     } catch (error) {
         console.log('Error', error)
@@ -53,10 +55,9 @@ people.put('/:id', (req, res) => {
 people.delete('/:id', (req, res) => {
     const { id } = req.params
     try {
-        const person = req.body
-        const personIdx = animesArr.findIndex(person => person.id === Number(id)); // findIndex will return the index or -1
-            if (index !== -1) {
-                peopleArr.splice(personIdx, 1, person) // or use filter (unsure how to apply that)   
+        const personIdx = peopleArr.findIndex(person => person.id === Number(id)); // findIndex will return the index or -1
+            if (personIdx !== -1) {
+                peopleArr.splice(personIdx, 1) // or use filter (unsure how to apply that) 
                 res.status(200).json(peopleArr) // what status is best? Status for receiving response or stat for successfully deleting element?
         }
     } catch (error) {
